@@ -1,0 +1,17 @@
+# public
+.idea
+
+## REST
+# Client
+restful-ws/client/.idea
+restful-ws/client/todo-list.iml
+restful-ws/client/todo-list/.idea
+restful-ws/client/todo-list/node_modules
+
+# Server
+restful-ws/server/tasks-server/.idea
+restful-ws/server/tasks-server/src/test
+restful-ws/server/tasks-server/target
+
+# SOAP
+
