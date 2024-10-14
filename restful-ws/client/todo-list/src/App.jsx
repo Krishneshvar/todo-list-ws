@@ -1,27 +1,53 @@
 import './App.css'
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function App() {
   const [tasks, setTasks] = useState([])
   const [newTask, setNewTask] = useState('')
 
-  const addTask = () => {
-    if (newTask.trim() !== '') {
-      setTasks([...tasks, { id: Date.now(), text: newTask, completed: false }])
-      setNewTask('')
-    }
-  }
+  // Fetch tasks from the backend on component mount
+  useEffect(() => {
+    fetch('http://localhost:8080/tasks_server_war_exploded/api/tasks')
+      .then(response => response.json())
+      .then(data => setTasks(data))
+      .catch(error => console.error('Error fetching tasks:', error))
+  }, [])
 
+  // Add task by sending POST request to the backend
+  const addTask = async () => {
+    if (newTask.trim() !== '') {
+      const taskToAdd = { id: Date.now(), text: newTask, completed: false };
+      
+      // Send the task to the backend
+      await fetch('http://localhost:8080/tasks_server_war_exploded/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(taskToAdd),
+      });
+  
+      setTasks([...tasks, taskToAdd]);
+      setNewTask('');
+    }
+  };    
+
+  // Toggle task completion (optional)
   const toggleTask = (id) => {
     setTasks(tasks.map(task => 
       task.id === id ? { ...task, completed: !task.completed } : task
     ))
   }
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id))
-  }
+  // Delete task by sending DELETE request to the backend
+  const deleteTask = async (id) => {
+    // Send the delete request to the backend
+    await fetch(`http://localhost:8080/api/tasks/${id}`, {
+      method: 'DELETE',
+    });
+  
+    setTasks(tasks.filter(task => task.id !== id));
+  };  
 
   return (
     <div className='home-container'>
